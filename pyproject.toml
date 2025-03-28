@@ -53,6 +53,9 @@ dev = [
 packages = ["pyst_client"]
 py-modules = []
 
+[tool.setuptools.dynamic]
+version = {attr = "pyst_client.__version__"}
+
 [tool.mypy]
 files = [
     "pyst_client",
