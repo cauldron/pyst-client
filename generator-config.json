@@ -1,0 +1,7 @@
+{
+  "packageName": "pyst_client",
+  "library": "asyncio",
+  "dateLibrary": "datetime",
+  "generateModelDocumentation": true,
+  "scmUrl": "https://github.com/cauldron/pyst-client"
+}
