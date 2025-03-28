@@ -26,6 +26,27 @@ cd pyst-client
 pip install -e .
 ```
 
+## Generating the Client
+
+This client is [automatically generated](https://openapi-generator.tech/docs/usage) from an OpenAPI specification.
+You can regenerate it using the following steps:
+
+1. Install the OpenAPI Generator CLI:
+
+   ```bash
+   $ pip install openapi-generator-cli[jdk4py]
+   ```
+
+2. Generate the client using the existing configuration:
+
+   ```bash
+   $ openapi-generator-cli generate -i openapi.json -g python -o . -c generator-config.json
+   ```
+
+   The `openapi.json` file can be either:
+   - A local file in the project root
+   - A URL pointing to your PyST API's OpenAPI specification (e.g., `http://your-api/openapi.json`)
+
 ## Usage
 
 Here's a basic example of how to use the client:
