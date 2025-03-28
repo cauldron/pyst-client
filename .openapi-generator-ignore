@@ -1,0 +1,10 @@
+pyproject.toml
+.gitlab-ci.yml
+.travis.yml
+git_push.sh
+setup.cfg
+setup.py
+requirements.txt
+test-requirements.txt
+tox.ini
+README.md

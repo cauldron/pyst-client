@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyst_client"
+authors = [
+    {name = "João Gonçalves", email = "jsvgoncalves@gmail.com"}
+]
+maintainers = [
+    {name = "João Gonçalves", email = "jsvgoncalves@gmail.com"}
+]
+description = "A Python client library for the PyST (Python Semantic Taxonomy) API"
+readme = "README.md"
+dynamic = ["version"]
+license = {file = "LICENSE"}
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering"
+]
+
+dependencies = [
+    "urllib3>=1.25.3,<3.0.0",
+    "python-dateutil>=2.8.2",
+    "aiohttp>=3.8.4",
+    "aiohttp-retry>=2.8.3",
+    "pydantic>=2",
+    "typing-extensions>=4.7.1",
+]
+
+[project.urls]
+homepage = "https://github.com/cauldron/pyst-client"
+source = "https://github.com/cauldron/pyst-client.git"
+tracker = "https://github.com/cauldron/pyst-client/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.2.1",
+    "pytest-cov>=2.8.1",
+    "tox>=3.9.0",
+    "flake8>=4.0.0",
+    "types-python-dateutil>=2.8.19.14",
+    "mypy>=1.5",
+]
+
+[tool.setuptools]
+packages = ["pyst_client"]
+py-modules = []
+
+[tool.mypy]
+files = [
+    "pyst_client",
+    "test",
+]
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+extra_checks = true
+check_untyped_defs = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pyst_client.configuration",
+]
+warn_unused_ignores = true
+strict_equality = true
+extra_checks = true
+check_untyped_defs = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_reexport = true
+warn_return_any = true
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v"
