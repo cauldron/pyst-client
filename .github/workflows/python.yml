@@ -3,7 +3,7 @@
 #
 # ref: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: pyst_client Python package
+name: Python 🐍 CI/CD tests
 
 on: [push, pull_request]
 

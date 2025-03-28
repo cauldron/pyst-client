@@ -1,5 +1,14 @@
 # pyst-client
 
+[![PyPI](https://img.shields.io/pypi/v/pyst-client.svg)][pypi status]
+[![Status](https://img.shields.io/pypi/status/pyst-client.svg)][pypi status]
+[![Python Version](https://img.shields.io/pypi/pyversions/pyst-client)][pypi status]
+[![License](https://img.shields.io/pypi/l/pyst-client)][pypi status]
+[![Tests](https://github.com/cauldron/pyst-client/actions/workflows/python-test.yml/badge.svg)][tests]
+
+[pypi status]: https://pypi.org/project/pyst-client/
+[tests]: https://github.com/cauldron/pyst-client/actions?workflow=Tests
+
 A Python client library for the PyST (Python Semantic Taxonomy) API.
 
 ## Overview

@@ -8,3 +8,4 @@ requirements.txt
 test-requirements.txt
 tox.ini
 README.md
+.github/
