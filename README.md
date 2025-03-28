@@ -4,7 +4,7 @@
 [![Status](https://img.shields.io/pypi/status/pyst-client.svg)][pypi status]
 [![Python Version](https://img.shields.io/pypi/pyversions/pyst-client)][pypi status]
 [![License](https://img.shields.io/pypi/l/pyst-client)][pypi status]
-[![Tests](https://github.com/cauldron/pyst-client/actions/workflows/python-test.yml/badge.svg)][tests]
+[![Tests](https://github.com/cauldron/pyst-client/actions/workflows/python.yml/badge.svg)][tests]
 
 [pypi status]: https://pypi.org/project/pyst-client/
 [tests]: https://github.com/cauldron/pyst-client/actions?workflow=Tests
