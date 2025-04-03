@@ -16,11 +16,11 @@ from __future__ import annotations
 import pprint
 import re  # noqa: F401
 import json
-from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
+from pyst_client.models.date_time import DateTime
 from pyst_client.models.multilingual_string import MultilingualString
 from pyst_client.models.node import Node
 from pyst_client.models.non_literal_note import NonLiteralNote
@@ -42,7 +42,7 @@ class CorrespondenceInput(BaseModel):
     http___www_w3_org_2004_02_skos_corechange_note: Optional[List[NonLiteralNote]] = Field(default=None, alias="http://www.w3.org/2004/02/skos/core#changeNote")
     http___www_w3_org_2004_02_skos_corehistory_note: Optional[List[NonLiteralNote]] = Field(default=None, alias="http://www.w3.org/2004/02/skos/core#historyNote")
     http___www_w3_org_2004_02_skos_coreeditorial_note: Optional[List[NonLiteralNote]] = Field(default=None, alias="http://www.w3.org/2004/02/skos/core#editorialNote")
-    http___purl_org_dc_terms_created: Annotated[List[datetime], Field(min_length=1, max_length=1)] = Field(description="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/created", alias="http://purl.org/dc/terms/created")
+    http___purl_org_dc_terms_created: Annotated[List[DateTime], Field(min_length=1, max_length=1)] = Field(description="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/created", alias="http://purl.org/dc/terms/created")
     http___purl_org_dc_terms_creator: List[Node] = Field(description="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/elements/1.1/creator", alias="http://purl.org/dc/terms/creator")
     http___www_w3_org_2002_07_owlversion_info: Annotated[List[VersionString], Field(min_length=1, max_length=1)] = Field(description="https://www.w3.org/TR/owl-ref/#versionInfo-def", alias="http://www.w3.org/2002/07/owl#versionInfo")
     http___www_w3_org_2004_02_skos_coredefinition: Optional[List[MultilingualString]] = Field(default=None, description="https://www.w3.org/TR/skos-primer/#secdocumentation", alias="http://www.w3.org/2004/02/skos/core#definition")
