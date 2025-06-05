@@ -1,9 +1,11 @@
 import asyncio
 import zipfile
+from itertools import repeat
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote_plus
 
 import httpx
+import orjson
 import structlog
 from platformdirs import user_data_dir
 from rdflib import URIRef
@@ -74,21 +76,23 @@ class CombinedNomenclatureLoader:
 
     def write(self) -> None:
         data = self.cn.expanded_json_ld_graph(self.cn.concept_scheme())[0]
+        iri = orjson.loads(data)["@id"]
         logger.info("Adding concept scheme")
-        asyncio.run(self._request(data=data, url_component="/concept_scheme/"))
+        asyncio.run(self._request(data=data, url_component="/api/v1/concept_schemes/", url_iri=iri))
 
         data = self.cn.expanded_json_ld_graph(self.cn.concepts(sample=self.sample))
+        iris = [orjson.loads(obj)["@id"] for obj in data]
         increment = 20
         logger.info("Adding concepts")
         for index in tqdm(range(0, len(data), increment)):
-            asyncio.run(self._chunked_request(url_component="/concept/", data=data))
+            asyncio.run(self._chunked_request(url_component="/api/v1/concepts/", data=data, url_iris=iris))
 
         data = self.cn.expanded_separate_json_ld_graph(
             SKOS.broader,
             self.cn.relationships(kind=SKOS.broader, sample=self.sample),
         )
         logger.info("Adding skos:broader relationships")
-        asyncio.run(self._chunked_request(data=data, url_component="/relationships/"))
+        asyncio.run(self._chunked_request(data=data, url_component="/api/v1/relationships/"))
 
         data = self.cn.expanded_separate_json_ld_graph(
             SKOS.relatedMatch,
@@ -99,7 +103,7 @@ class CombinedNomenclatureLoader:
         for index in tqdm(range(0, len(data), increment)):
             asyncio.run(
                 self._chunked_request(
-                    data=data[index : index + increment], url_component="/relationships/"
+                    data=data[index : index + increment], url_component="/api/v1/relationships/"
                 )
             )
 
@@ -113,7 +117,8 @@ class CombinedNomenclatureLoader:
             data = self.cn.expanded_json_ld_graph(
                 self.cn.correspondence(uri=uri, sample=self.sample)
             )[0]
-            asyncio.run(self._request(data=data, url_component="/correspondence/"))
+            iri = orjson.loads(data)["@id"]
+            asyncio.run(self._request(data=data, url_component="/api/v1/correspondences/", url_iri=iri))
 
         data = [
             self.cn.expanded_json_ld_graph(obj)[0]
@@ -123,38 +128,42 @@ class CombinedNomenclatureLoader:
         increment = 50
         logger.info("Adding xkos:ConceptAssociations")
         for index in tqdm(range(0, len(data), increment)):
+            iris = [orjson.loads(obj)["@id"] for obj in data[index : index + increment]]
             asyncio.run(
                 self._chunked_request(
-                    data=data[index : index + increment], url_component="/association/"
+                    data=data[index : index + increment], url_component="/api/v1/associations/", url_iris=iris
                 )
             )
 
         logger.info("Updating `Correspondence:made_of`")
         for uri in correspondence_uris:
             data = self.cn.expanded_json_ld_graph(self.cn.made_of(uri=uri, sample=self.sample))[0]
-            asyncio.run(self._request(data=data, url_component="/made_of/"))
+            asyncio.run(self._request(data=data, url_component="/api/v1/made_ofs/"))
 
-    async def _request(self, url_component: str, data: bytes) -> httpx.Response:
+    async def _request(self, url_component: str, data: bytes, url_iri: str | None = None) -> httpx.Response:
         async with httpx.AsyncClient() as client:
             if not isinstance(data, bytes):
                 raise TypeError
 
             response = await client.post(
-                urljoin(self.host, url_component),
+                urljoin(self.host, url_component + quote_plus(url_iri or "")),
                 headers={"X-PyST-Auth-Token": self.api_key, "Content-Type": "application/json"},
                 content=data,
             )
 
         return response
 
-    async def _chunked_request(self, url_component: str, data: list[bytes]) -> list[httpx.Response]:
+    async def _chunked_request(self, url_component: str, data: list[bytes], url_iris: list[str] | None = None) -> list[httpx.Response]:
+        if url_iris is None:
+            url_iris = repeat("")
+
         async with httpx.AsyncClient() as client:
             tasks = []
-            for chunk in data:
+            for chunk, iri in zip(data, url_iris):
                 tasks.append(
                     asyncio.create_task(
                         client.post(
-                            urljoin(self.host, url_component),
+                            urljoin(self.host, url_component + quote_plus(iri)),
                             headers={
                                 "X-PyST-Auth-Token": self.api_key,
                                 "Content-Type": "application/json",
