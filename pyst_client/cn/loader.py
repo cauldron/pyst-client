@@ -15,7 +15,7 @@ from tqdm import tqdm
 from pyst_client.cn.rdf import CombinedNomenclature
 
 logger = structlog.get_logger("sentier_vocab")
-
+transport = httpx.AsyncHTTPTransport(retries=5)
 
 SAMPLE_CORRESPONDENCE_BY_YEAR = {
     2024: [
@@ -141,7 +141,7 @@ class CombinedNomenclatureLoader:
             asyncio.run(self._request(data=data, url_component="/api/v1/made_ofs/"))
 
     async def _request(self, url_component: str, data: bytes, url_iri: str | None = None) -> httpx.Response:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(transport=transport) as client:
             if not isinstance(data, bytes):
                 raise TypeError
 
@@ -157,7 +157,7 @@ class CombinedNomenclatureLoader:
         if url_iris is None:
             url_iris = repeat("")
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(transport=transport) as client:
             tasks = []
             for chunk, iri in zip(data, url_iris):
                 tasks.append(
