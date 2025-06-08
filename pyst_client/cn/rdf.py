@@ -83,7 +83,7 @@ class CombinedNomenclature:
         if sample:
             concept_uris = self._sample_concept_uris()
         else:
-            concept_uris = self._concept_uris(self.cs_uri)
+            concept_uris = self._concept_uris()
 
         for subj, verb, obj in self.graph.triples((None, None, None)):
             if subj not in concept_uris:
@@ -122,7 +122,7 @@ class CombinedNomenclature:
         if sample:
             concept_uris = self._sample_concept_uris()
         else:
-            concept_uris = self._concept_uris(self.cs_uri)
+            concept_uris = self._concept_uris()
 
         for subj, verb, obj in self.graph.triples((None, kind, None)):
             if subj not in concept_uris:
