@@ -8,6 +8,7 @@ from py_semantic_taxonomy.domain.url_utils import get_full_api_path
 from pyst_client.simple.settings import settings
 
 logger = structlog.get_logger("pyst-client")
+transport = httpx.HTTPTransport(retries=5)
 
 
 class APIError(Exception):
@@ -63,6 +64,7 @@ class ReadClient:
                 "Content-Type": "application/json",
                 "x-pyst-auth-token": settings.api_key,
             },
+            transport=transport,
         )
 
     def check_error(self, response: httpx.Response) -> None:
