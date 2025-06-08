@@ -65,6 +65,9 @@ class Relationship(entities.Relationship):
         # Validation
         [req.Relationship(**obj.to_json_ld()) for obj in relationships]
 
+        if not relationships:
+            return []
+
         errors = True
         while errors:
             try:
@@ -78,6 +81,8 @@ class Relationship(entities.Relationship):
                 if err.status_code != 409 or not skip_duplicates:
                     raise err
                 relationships = remove_duplicates(data=relationships, message=str(err))
+                if not relationships:
+                    break
         return relationships
 
     @classmethod
