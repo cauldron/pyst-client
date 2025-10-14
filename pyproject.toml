@@ -24,7 +24,6 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering"
 ]
-
 dependencies = [
     "aiohttp-retry>=2.8.3",
     "aiohttp>=3.8.4",
@@ -35,11 +34,13 @@ dependencies = [
     "pydantic>=2",
     "python-dateutil>=2.8.2",
     "rdflib",
+    "requests",
     "skosify",
     "structlog",
     "tqdm",
     "typing-extensions>=4.7.1",
     "urllib3>=1.25.3,<3.0.0",
+    "py_semantic_taxonomy>=0.4.1",
 ]
 
 [project.urls]
@@ -58,8 +59,14 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["pyst_client"]
-py-modules = []
+packages = {find = {exclude = ["test*"]}}
+include-package-data = true
+
+[tool.setuptools.package-data]
+pyst_client = [
+    "units/data/*.ttl",
+    "units/data/*.json",
+]
 
 [tool.setuptools.dynamic]
 version = {attr = "pyst_client.__version__"}
