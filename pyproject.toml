@@ -28,6 +28,7 @@ classifiers = [
 dependencies = [
     "aiohttp-retry>=2.8.3",
     "aiohttp>=3.8.4",
+    "beautifulsoup4",
     "httpx",
     "orjson",
     "platformdirs",

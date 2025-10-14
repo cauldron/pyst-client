@@ -1,11 +1,21 @@
 import webbrowser
 from urllib.parse import urljoin
+from typing import Any
 
 import orjson
 from py_semantic_taxonomy.domain.url_utils import get_full_api_path
+from pydantic import BaseModel
 
 from pyst_client.simple.client import APIError, get_read_client, get_write_client
 from pyst_client.simple.settings import settings
+
+
+def handle_custom_types(obj: Any) -> dict:
+    """Function to pass to `orjson` [default](https://github.com/ijl/orjson?tab=readme-ov-file#default)
+    serialization. Handles Pydantic classes."""
+    if isinstance(obj, BaseModel):
+        return obj.model_dump(mode='json')
+    raise TypeError
 
 
 class APIBase:
@@ -21,7 +31,7 @@ class APIBase:
         webbrowser.open_new_tab(self.web_url)
 
     def json(self) -> bytes:
-        return orjson.dumps(self.to_json_ld())
+        return orjson.dumps(self.to_json_ld(), default=handle_custom_types)
 
     def save(self, already_exists: bool = False) -> None:
         client = get_write_client()

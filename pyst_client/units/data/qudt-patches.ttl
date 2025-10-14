@@ -1,0 +1,6 @@
+@prefix quantitykind: <http://qudt.org/vocab/quantitykind/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+
+unit:PA qudt:hasQuantityKind quantitykind:Pressure .
+unit:W-PER-M2 qudt:hasQuantityKind quantitykind:Irradiance .

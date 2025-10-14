@@ -15,7 +15,7 @@ from tqdm import tqdm
 from pyst_client.cn.rdf import CombinedNomenclature
 
 logger = structlog.get_logger("sentier_vocab")
-
+transport = httpx.AsyncHTTPTransport(retries=5)
 
 SAMPLE_CORRESPONDENCE_BY_YEAR = {
     2024: [
@@ -80,19 +80,19 @@ class CombinedNomenclatureLoader:
         logger.info("Adding concept scheme")
         asyncio.run(self._request(data=data, url_component="/api/v1/concept_schemes/", url_iri=iri))
 
+        logger.info("Adding concepts")
         data = self.cn.expanded_json_ld_graph(self.cn.concepts(sample=self.sample))
         iris = [orjson.loads(obj)["@id"] for obj in data]
-        increment = 20
-        logger.info("Adding concepts")
-        for index in tqdm(range(0, len(data), increment)):
-            asyncio.run(self._chunked_request(url_component="/api/v1/concepts/", data=data, url_iris=iris))
+        for ds, iri in tqdm(zip(data, iris)):
+            asyncio.run(self._request(data=ds, url_component="/api/v1/concepts/", url_iri=iri))
 
         data = self.cn.expanded_separate_json_ld_graph(
             SKOS.broader,
             self.cn.relationships(kind=SKOS.broader, sample=self.sample),
         )
         logger.info("Adding skos:broader relationships")
-        asyncio.run(self._chunked_request(data=data, url_component="/api/v1/relationships/"))
+        for elem in tqdm(data):
+            asyncio.run(self._request(data=elem, url_component="/api/v1/relationships/"))
 
         data = self.cn.expanded_separate_json_ld_graph(
             SKOS.relatedMatch,
@@ -141,7 +141,7 @@ class CombinedNomenclatureLoader:
             asyncio.run(self._request(data=data, url_component="/api/v1/made_ofs/"))
 
     async def _request(self, url_component: str, data: bytes, url_iri: str | None = None) -> httpx.Response:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(transport=transport) as client:
             if not isinstance(data, bytes):
                 raise TypeError
 
@@ -157,7 +157,7 @@ class CombinedNomenclatureLoader:
         if url_iris is None:
             url_iris = repeat("")
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(transport=transport) as client:
             tasks = []
             for chunk, iri in zip(data, url_iris):
                 tasks.append(
